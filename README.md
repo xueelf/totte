@@ -74,12 +74,12 @@ const result = await totte('/ping');
 ## API
 
 **totte(init, config?)**  
-**totte.get(url, data?)**  
-**totte.post(url, data?)**  
-**totte.put(url, data?)**  
-**totte.patch(url, data?)**  
-**totte.head(url, data?)**  
-**totte.delete(url, data?)**  
+**totte.get(url, data?, options?)**  
+**totte.post(url, data?, options?)**  
+**totte.put(url, data?, options?)**  
+**totte.patch(url, data?, options?)**  
+**totte.head(url, data?, options?)**  
+**totte.delete(url, data?, options?)**  
 **totte.create(options?)**  
 **totte.useRequestInterceptor(callback?)**  
 **totte.useResponseInterceptor(callback?)**
@@ -98,3 +98,7 @@ The request configuration items are exactly the same as fetch, and the following
   responseType: 'json', // default
 }
 ```
+
+## About
+
+Totte is the romanization of the Japanese word "取って", which is exactly Fetch in English, and "totte" is also very similar to "tote", so I used it as the name of the project.

@@ -74,12 +74,12 @@ const result = await totte('/ping');
 ## API
 
 **totte(init, config?)**  
-**totte.get(url, data?)**  
-**totte.post(url, data?)**  
-**totte.put(url, data?)**  
-**totte.patch(url, data?)**  
-**totte.head(url, data?)**  
-**totte.delete(url, data?)**  
+**totte.get(url, data?, options?)**  
+**totte.post(url, data?, options?)**  
+**totte.put(url, data?, options?)**  
+**totte.patch(url, data?, options?)**  
+**totte.head(url, data?, options?)**  
+**totte.delete(url, data?, options?)**  
 **totte.create(options?)**  
 **totte.useRequestInterceptor(callback?)**  
 **totte.useResponseInterceptor(callback?)**
@@ -98,3 +98,7 @@ const result = await totte('/ping');
   responseType: 'json', // 默认值
 }
 ```
+
+## 关于
+
+Totte 是日语「取って」的罗马音，其英语正是 Fetch，而且「totte」也和 「tote」非常相似，我便将其用做了该项目的名字。
