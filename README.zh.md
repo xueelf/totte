@@ -45,57 +45,101 @@ npm install totte
 ```javascript
 import totte from 'totte';
 
-const result = await totte('https://api.yuki.sh/ping');
-
-console.log(result);
-// -> { status: 200, data: 'Ciallo～(∠·ω< )⌒★', ... }
+// Request GET
+const result1 = await totte('https://example.org/products.json');
+// Request POST
+const result2 = await totte.post('https://example.org/post', {
+  username: 'example',
+});
+// Request FormData
+const result3 = await totte.post(
+  'https://example.org/post',
+  {
+    username: 'example',
+  },
+  {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  },
+);
 ```
 
-你还可以使用 class 或者 create 来创建新的实体：
+与 `fetch` 相比，`totte` 提供的 API 更加简便、灵活。
+
+```javascript
+// GET Request
+const response1 = await fetch('https://example.org/products.json');
+const json1 = await response1.json();
+
+// POST Request
+const response2 = await fetch('https://example.org/post', {
+  method: 'POST',
+  body: JSON.stringify({
+    username: 'example',
+  }),
+});
+const json2 = await response2.json();
+
+// Request FormData
+const formData = new FormData();
+formData.append('username', 'example');
+
+const response3 = await fetch('https://example.org/post', {
+  method: 'POST',
+  body: formData,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
+const json3 = await response3.json();
+```
+
+你还可以使用 `Totte` 类或者 `create` 来构建新的实例：
 
 ```javascript
 import totte from 'totte';
 
 const request = totte.create({
-  origin: 'https://api.yuki.sh',
+  origin: 'https://example.org',
 });
-const result = await totte('/ping');
+const result = await totte('/products.json');
 ```
 
 ```javascript
 import { Totte } from 'totte';
 
 const request = new Totte(({
-  origin: 'https://api.yuki.sh',
+  origin: 'https://example.org',
 });
-const result = await totte('/ping');
+const result = await totte('/products.json');
 ```
 
 ## API
 
 **totte(init, config?)**  
-**totte.get(url, data?, options?)**  
-**totte.post(url, data?, options?)**  
-**totte.put(url, data?, options?)**  
-**totte.patch(url, data?, options?)**  
-**totte.head(url, data?, options?)**  
-**totte.delete(url, data?, options?)**  
+**totte.get(url, payload?, options?)**  
+**totte.post(url, payload?, options?)**  
+**totte.put(url, payload?, options?)**  
+**totte.patch(url, payload?, options?)**  
+**totte.head(url, payload?, options?)**  
+**totte.delete(url, payload?, options?)**  
 **totte.create(options?)**  
 **totte.useRequestInterceptor(callback?)**  
 **totte.useResponseInterceptor(callback?)**
 
 ## 配置项
 
-网络请求的配置项与 fetch 完全相同，并在其基础上追加了下列四个额外属性：
+网络请求的配置项与 `fetch` 完全相同，并在其基础上追加了下列四个额外属性：
 
-```javascript
-{
-  origin: 'https://api.yuki.sh';
-  url: '/ping';
-  // 可选值：'GET' | 'DELETE' | 'HEAD' | 'POST' | 'PUT' | 'PATCH'
-  method: 'GET'; // 默认值
-  // 可选值：'arraybuffer' | 'blob' | 'json' | 'text' | 'formData'
-  responseType: 'json', // 默认值
+```typescript
+interface RequestConfig {
+  url: string;
+  origin?: string;
+  // 请求载荷
+  payload?: object | null;
+  // 默认 'json'，可选值：'arraybuffer' | 'blob' | 'json' | 'text' | 'formData'
+  responseType?: ResponseType;
 }
 ```
 
