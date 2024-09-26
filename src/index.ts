@@ -1,4 +1,4 @@
-import { parseError, paramsToString, assignDeep, objectToFormData, cloneDeep } from '@/utils';
+import { parseError, paramsToString, assignDeep, objectToFormData, cloneDeep } from './utils';
 
 export interface RequestConfig extends RequestInit {
   url: string;
@@ -120,7 +120,7 @@ export class Totte {
   }
 
   public create(options?: RequestOptions): TotteInstance {
-    return createInstance(new Totte(options));
+    return createInstance(options);
   }
 
   public async request<T>(config: RequestConfig): Promise<Result<T>>;
@@ -195,11 +195,12 @@ export class Totte {
   }
 }
 
-interface TotteInstance extends Totte {
+export interface TotteInstance extends Totte {
   (...args: Parameters<Totte['request']>): ReturnType<Totte['request']>;
 }
 
-function createInstance(context: Totte): TotteInstance {
+export function createInstance(options: RequestOptions = {}): TotteInstance {
+  const context = new Totte(options);
   const instance = Totte.prototype.request.bind(context);
   const keys = <Array<keyof Totte>>Object.getOwnPropertyNames(Totte.prototype);
 
@@ -208,8 +209,6 @@ function createInstance(context: Totte): TotteInstance {
   }
   return instance as unknown as TotteInstance;
 }
+const instance: TotteInstance = createInstance();
 
-const context = new Totte();
-const totte = createInstance(context);
-
-export default totte;
+export default instance;
