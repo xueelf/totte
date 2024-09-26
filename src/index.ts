@@ -32,6 +32,18 @@ export type ResponseInterceptor<T = unknown, R extends Result<T> = Result<T>> = 
   result: R,
 ) => void | R | Promise<void | R>;
 
+export interface Totte {
+  useRequestInterceptor(interceptor: RequestInterceptor): void;
+  useResponseInterceptor<T>(interceptor: ResponseInterceptor<T>): void;
+  create(options?: RequestOptions): TotteInstance;
+  request<T>(config: RequestConfig): Promise<Result<T>>;
+  get<T>(url: string, payload?: object | null, options?: RequestOptions): Promise<Result<T>>;
+  delete<T>(url: string, payload?: object | null, options?: RequestOptions): Promise<Result<T>>;
+  head<T>(url: string, payload?: object | null, options?: RequestOptions): Promise<Result<T>>;
+  post<T>(url: string, payload?: object | null, options?: RequestOptions): Promise<Result<T>>;
+  put<T>(url: string, payload?: object | null, options?: RequestOptions): Promise<Result<T>>;
+  patch<T>(url: string, payload?: object | null, options?: RequestOptions): Promise<Result<T>>;
+}
 export class Totte {
   private options: RequestOptions;
   private requestInterceptors: RequestInterceptor[];
@@ -54,6 +66,20 @@ export class Totte {
       this.parseBody(config);
 
       return config;
+    });
+    const methods = ['get', 'delete', 'head', 'post', 'put', 'patch'];
+
+    methods.forEach(method => {
+      Reflect.set(
+        this,
+        method,
+        (url: string, payload?: object | null, options: RequestOptions = {}): Promise<Result> =>
+          this.request.call(this, url, {
+            method: <Method>method.toUpperCase(),
+            payload,
+            ...options,
+          }),
+      );
     });
   }
 
@@ -93,7 +119,7 @@ export class Totte {
     this.responseInterceptors.push(<ResponseInterceptor>interceptor);
   }
 
-  public create(options: RequestOptions): TotteInstance {
+  public create(options?: RequestOptions): TotteInstance {
     return createInstance(new Totte(options));
   }
 
@@ -166,84 +192,6 @@ export class Totte {
       result.data = ripeData;
     }
     return <Result<T>>result;
-  }
-
-  public get<T>(
-    url: string,
-    payload?: object | null,
-    options: RequestOptions = {},
-  ): Promise<Result<T>> {
-    return this.request<T>({
-      url,
-      method: 'GET',
-      payload,
-      ...options,
-    });
-  }
-
-  public delete<T>(
-    url: string,
-    payload?: object | null,
-    options: RequestOptions = {},
-  ): Promise<Result<T>> {
-    return this.request<T>({
-      url,
-      method: 'DELETE',
-      payload,
-      ...options,
-    });
-  }
-
-  public head<T>(
-    url: string,
-    payload?: object | null,
-    options: RequestOptions = {},
-  ): Promise<Result<T>> {
-    return this.request<T>({
-      url,
-      method: 'HEAD',
-      payload,
-      ...options,
-    });
-  }
-
-  public post<T>(
-    url: string,
-    payload?: object | null,
-    options: RequestOptions = {},
-  ): Promise<Result<T>> {
-    return this.request<T>({
-      url,
-      method: 'POST',
-      payload,
-      ...options,
-    });
-  }
-
-  public put<T>(
-    url: string,
-    payload?: object | null,
-    options: RequestOptions = {},
-  ): Promise<Result<T>> {
-    return this.request<T>({
-      url,
-      method: 'PUT',
-      payload,
-      ...options,
-    });
-  }
-
-  public patch<T>(
-    url: string,
-    payload?: object | null,
-    options: RequestOptions = {},
-  ): Promise<Result<T>> {
-    return this.request<T>({
-      url,
-      method: 'PATCH',
-      payload,
-      ...options,
-    });
   }
 }
 
