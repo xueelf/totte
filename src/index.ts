@@ -34,6 +34,8 @@ export type ResponseInterceptor<T = unknown, R extends Result<T> = Result<T>> = 
   result: R,
 ) => void | R | Promise<void | R>;
 
+const methods = ['get', 'delete', 'head', 'post', 'put', 'patch'];
+
 export interface Totte {
   useRequestInterceptor(interceptor: RequestInterceptor): void;
   useResponseInterceptor<T>(interceptor: ResponseInterceptor<T>): void;
@@ -71,7 +73,6 @@ export class Totte {
       this.parseBody(config);
       return config;
     });
-    const methods = ['get', 'delete', 'head', 'post', 'put', 'patch'];
 
     methods.forEach(method => {
       Reflect.set(
@@ -206,10 +207,16 @@ export interface TotteInstance extends Totte {
 export function createInstance(options: RequestOptions = {}): TotteInstance {
   const context = new Totte(options);
   const instance = Totte.prototype.request.bind(context);
-  const keys = <Array<keyof Totte>>Object.getOwnPropertyNames(Totte.prototype);
+  const keys = <Array<keyof Totte>>[...Object.getOwnPropertyNames(Totte.prototype), ...methods];
 
-  for (const key of keys) {
-    Reflect.set(instance, key, context[key].bind(context));
+  for (let index = 0; index < keys.length; index++) {
+    const key = keys[index];
+    const method = context[key];
+
+    if (typeof method !== 'function') {
+      continue;
+    }
+    Reflect.set(instance, key, method.bind(context));
   }
   return instance as unknown as TotteInstance;
 }
